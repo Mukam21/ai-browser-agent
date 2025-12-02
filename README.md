@@ -5,13 +5,17 @@ AI Browser Agent - Автономный агент для браузера
 Быстрый старт
 
 
-``bash
+
     # 1. Установи Go 1.21+
+
     # 2. Клонируй проект
-    git clone https://github.com/yourname/ai-browser-agent.git
+
+    git clone https://github.com/Mukam21/ai-browser-agent.git
+
     cd ai-browser-agent
 
     # 3. Установи зависимости
+
     go mod tidy
 
     # 4. Настрой API ключ (попроси у рекрутера)
@@ -22,7 +26,7 @@ AI Browser Agent - Автономный агент для браузера
 
     # 5. Запусти
     go run cmd/agent/main.go
-``
+
 
 Особенности
 ✅ Полная автономность - агент сам планирует действия
@@ -33,6 +37,7 @@ AI Browser Agent - Автономный агент для браузера
 
  Архитектура
 `` text
+
     Пользователь → AI Агент → Планирование (LLM) → Браузер → Результат
 ``
 
