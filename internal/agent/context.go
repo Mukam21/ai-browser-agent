@@ -94,7 +94,7 @@ func (tc *TaskContext) GetRecentPageStates(count int) string {
 	}
 
 	recent := tc.PageHistory[start:]
-	result := "📄 Недавние страницы:\n"
+	result := " Недавние страницы:\n"
 
 	for i, state := range recent {
 		result += fmt.Sprintf("%d. %s - %s\n", i+1, state.Title, state.URL)
@@ -104,16 +104,15 @@ func (tc *TaskContext) GetRecentPageStates(count int) string {
 }
 
 func (tc *TaskContext) GetCurrentContext() string {
-	context := fmt.Sprintf(`🎯 Текущая задача: %s
-📈 %s
-🎯 Текущая цель: %s
-🌐 Текущий URL: %s
+	context := fmt.Sprintf(` Текущая задача: %s
+ %s
+ Текущая цель: %s
+ Текущий URL: %s
 
 `, tc.OriginalTask, tc.GetProgressSummary(), tc.CurrentGoal, tc.CurrentURL)
 
-	// Добавляем последние шаги прогресса
 	if len(tc.Progress) > 0 {
-		context += "📋 Последние действия:\n"
+		context += " Последние действия:\n"
 		start := len(tc.Progress) - 3
 		if start < 0 {
 			start = 0

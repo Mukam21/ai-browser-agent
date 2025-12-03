@@ -16,32 +16,26 @@ import (
 )
 
 func main() {
-	// Настраиваем логирование
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	ctx := context.Background()
-
-	// Загружаем конфигурацию
 	cfg := config.Load()
 
 	showHeader()
 
-	// Проверяем API ключ
 	if cfg.OpenAIAPIKey == "" {
 		showAPIKeyHelp()
 		return
 	}
 
-	log.Println("🔧 Конфигурация загружена:")
+	log.Println(" Конфигурация загружена:")
 	log.Printf("  • Модель: %s", cfg.Model)
 	log.Printf("  • Макс. шагов: %d", cfg.MaxSteps)
 	log.Printf("  • Режим отладки: %v", cfg.Debug)
 
-	// Инициализируем LLM клиент
 	log.Println("🧠 Инициализирую LLM клиент...")
 	llmClient := llm.NewOpenAIClient(cfg.OpenAIAPIKey, cfg.Model, cfg.MaxTokens)
 
-	// Инициализируем браузер
 	log.Println("🚀 Инициализирую браузер...")
 	browserCtrl, err := browser.NewController(ctx)
 	if err != nil {
@@ -51,7 +45,6 @@ func main() {
 
 	log.Println("✅ Система инициализирована успешно!")
 
-	// Создаем автономного агента
 	agentConfig := &agent.Config{
 		MaxSteps:      cfg.MaxSteps,
 		Debug:         cfg.Debug,
@@ -63,7 +56,6 @@ func main() {
 
 	autonomousAgent := agent.NewAutonomousAgent(llmClient, browserCtrl, agentConfig)
 
-	// Основной цикл взаимодействия
 	runMainLoop(ctx, autonomousAgent)
 }
 
@@ -78,7 +70,6 @@ func showHeader() {
 }
 
 func clearScreen() {
-	// Простая очистка экрана
 	fmt.Print("\033[H\033[2J")
 }
 
@@ -133,12 +124,12 @@ func runMainLoop(ctx context.Context, agent *agent.AutonomousAgent) {
 
 func showMenu() {
 	fmt.Println("\n" + strings.Repeat("─", 70))
-	fmt.Println("📋 ГЛАВНОЕ МЕНЮ")
+	fmt.Println("ГЛАВНОЕ МЕНЮ")
 	fmt.Println(strings.Repeat("─", 70))
-	fmt.Println("1. 🎯 Выполнить задачу")
-	fmt.Println("2. 📚 Примеры задач")
-	fmt.Println("3. 🔧 Возможности агента")
-	fmt.Println("4. 🚪 Выход")
+	fmt.Println("1. Выполнить задачу")
+	fmt.Println("2. Примеры задач")
+	fmt.Println("3. Возможности агента")
+	fmt.Println("4. Выход")
 	fmt.Println(strings.Repeat("─", 70))
 
 	fmt.Print("\n👉 Выберите действие (1-4): ")
@@ -152,10 +143,10 @@ func getUserChoice() string {
 
 func executeTask(ctx context.Context, agent *agent.AutonomousAgent) {
 	fmt.Println("\n" + strings.Repeat("═", 70))
-	fmt.Println("🎯 ВЫПОЛНЕНИЕ ЗАДАЧИ")
+	fmt.Println("ВЫПОЛНЕНИЕ ЗАДАЧИ")
 	fmt.Println(strings.Repeat("═", 70))
 
-	fmt.Println("\n📝 Введите задачу для AI агента:")
+	fmt.Println("\n Введите задачу для AI агента:")
 	fmt.Println("(Пример: 'Найди информацию про искусственный интеллект на Википедии')")
 
 	fmt.Print("\n👉 Задача: ")
@@ -165,21 +156,20 @@ func executeTask(ctx context.Context, agent *agent.AutonomousAgent) {
 	task = strings.TrimSpace(task)
 
 	if task == "" {
-		fmt.Println("\n⚠️ Задача не может быть пустой.")
+		fmt.Println("\n Задача не может быть пустой.")
 		return
 	}
 
 	fmt.Printf("\n🧠 Анализирую задачу: \"%s\"\n", task)
-	fmt.Println("🔄 AI агент начинает выполнение...")
+	fmt.Println(" AI агент начинает выполнение...")
 	fmt.Println(strings.Repeat("─", 70))
 
-	// Выполняем задачу
 	startTime := time.Now()
 	result, err := agent.Execute(ctx, task)
 	elapsed := time.Since(startTime)
 
 	fmt.Println("\n" + strings.Repeat("═", 70))
-	fmt.Println("📊 РЕЗУЛЬТАТ ВЫПОЛНЕНИЯ")
+	fmt.Println(" РЕЗУЛЬТАТ ВЫПОЛНЕНИЯ")
 	fmt.Println(strings.Repeat("═", 70))
 
 	if err != nil {
@@ -188,7 +178,7 @@ func executeTask(ctx context.Context, agent *agent.AutonomousAgent) {
 		fmt.Println(result)
 	}
 
-	fmt.Printf("\n⏱️ Время выполнения: %v\n", elapsed.Round(time.Second))
+	fmt.Printf("\n Время выполнения: %v\n", elapsed.Round(time.Second))
 	fmt.Println(strings.Repeat("═", 70))
 
 	fmt.Print("\nНажмите Enter для продолжения...")
@@ -199,29 +189,29 @@ func showExamples() {
 	examples := `
 📚 ПРИМЕРЫ ЗАДАЧ ДЛЯ AI АГЕНТА
 
-1. 🎯 Поиск информации:
+1.  Поиск информации:
    • "Найди последние новости про искусственный интеллект"
    • "Найди информацию о Go программировании на официальном сайте"
    • "Поищи курсы по машинному обучению"
 
-2. 🌐 Навигация и исследование:
+2.  Навигация и исследование:
    • "Перейди на сайт GitHub и найди trending репозитории"
    • "Открой Википедию и найди статью про квантовые компьютеры"
    • "Исследуй документацию Docker"
 
-3. 📧 Работа с почтой (концепт):
+3.  Работа с почтой (концепт):
    • "Проверь новые письма в почте" (требует авторизацию)
    • "Найди письма от конкретного отправителя"
 
-4. 🛒 Онлайн-покупки (концепт):
+4.  Онлайн-покупки (концепт):
    • "Найди товары по определенной категории"
    • "Сравни цены на продукт"
 
-5. 💼 Поиск работы (концепт):
+5.  Поиск работы (концепт):
    • "Найди вакансии Go разработчика"
    • "Ищи удаленные позиции"
 
-🔧 Примечание: Некоторые задачи требуют авторизации или 
+ Примечание: Некоторые задачи требуют авторизации или 
    дополнительной настройки безопасности.
 `
 
@@ -256,13 +246,13 @@ func showCapabilities() {
    • Векторная память для долгосрочного контекста
    • Поддержка разных браузерных движков
 
-🎯 Архитектурные принципы:
+ Архитектурные принципы:
 1. Нет предзаданных шагов - агент исследует сайты сам
 2. Нет хардкода селекторов - использует описания
 3. Контекстное управление - помнит историю действий
 4. Self-correction - исправляет ошибки автоматически
 
-🚀 Планы развития:
+ Планы развития:
 • Компьютерное зрение для анализа интерфейсов
 • Поддержка мульти-агентных систем
 • Интеграция с внешними API

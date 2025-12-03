@@ -22,7 +22,7 @@ func NewSafeController(ctx context.Context) *SafeController {
 }
 
 func (sc *SafeController) Navigate(url string) error {
-	log.Printf("🌐 Открываю: %s", url)
+	log.Printf(" Открываю: %s", url)
 
 	var cmd *exec.Cmd
 	switch runtime.GOOS {
@@ -54,7 +54,7 @@ func (sc *SafeController) GetPageState() (string, error) {
 
 	state := fmt.Sprintf(`Текущая страница: %s
 
-📄 Состояние (симуляция в безопасном режиме):
+ Состояние (симуляция в безопасном режиме):
 
 В безопасном режиме AI агент может:
 1. Анализировать команды пользователя
@@ -146,8 +146,8 @@ func (sc *SafeController) GetDOM() (string, error) {
 }
 
 func (sc *SafeController) Click(selector string) error {
-	log.Printf("🖱️ Симуляция клика: %s", selector)
-	log.Printf("ℹ️ В реальном режиме был бы клик по элементу с селектором: %s", selector)
+	log.Printf(" Симуляция клика: %s", selector)
+	log.Printf(" В реальном режиме был бы клик по элементу с селектором: %s", selector)
 
 	// Симулируем задержку клика
 	time.Sleep(500 * time.Millisecond)
@@ -155,8 +155,8 @@ func (sc *SafeController) Click(selector string) error {
 }
 
 func (sc *SafeController) Fill(selector, value string) error {
-	log.Printf("⌨️ Симуляция ввода: %s = %s", selector, value)
-	log.Printf("ℹ️ В реальном режиме в поле %s был бы введен текст: %s", selector, value)
+	log.Printf(" Симуляция ввода: %s = %s", selector, value)
+	log.Printf(" В реальном режиме в поле %s был бы введен текст: %s", selector, value)
 
 	// Симулируем задержку ввода
 	time.Sleep(300 * time.Millisecond)
@@ -168,7 +168,7 @@ func (sc *SafeController) Screenshot(path string) error {
 		path = fmt.Sprintf("screenshot_%d.txt", time.Now().Unix())
 	}
 
-	log.Printf("📸 Симуляция скриншота: %s", path)
+	log.Printf(" Симуляция скриншота: %s", path)
 
 	content := fmt.Sprintf(`AI Browser Agent - Скриншот (симуляция)
 
@@ -177,18 +177,18 @@ func (sc *SafeController) Screenshot(path string) error {
 Режим: Безопасный (без автоматизации браузера)
 Текущий URL: %s
 
-📊 Информация о выполнении:
+ Информация о выполнении:
 • AI агент работает в безопасном режиме
 • Все команды анализируются и планируются
 • URL открываются в системном браузере
 • Взаимодействия симулируются
 
-🎯 Для получения реальных скриншотов:
+ Для получения реальных скриншотов:
 1. Отключите антивирус для Rod/Playwright
 2. Или используйте Selenium WebDriver
 3. Или запустите на Linux/Mac
 
-📝 Следующие шаги развития:
+ Следующие шаги развития:
 • Интеграция с реальным браузерным движком
 • Компьютерное зение для анализа страниц
 • Векторная память для контекста

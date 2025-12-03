@@ -138,7 +138,6 @@ func (p *Planner) validatePlan(plan *Plan) bool {
 }
 
 func (p *Planner) createFallbackPlan() *Plan {
-	// План по умолчанию если LLM вернул невалидный план
 	return &Plan{
 		Thought:     "Попробую прочитать информацию со страницы чтобы понять что делать дальше",
 		Action:      "read",
@@ -159,7 +158,6 @@ func (p *Planner) EvaluateResult(plan *Plan, result string, success bool) {
 
 	p.memory.AddInteraction(interaction)
 
-	// Обновляем контекст задачи
 	goal := fmt.Sprintf("%s: %s", plan.Action, truncateText(plan.Thought, 50))
 	p.context.AddProgress(
 		len(p.context.Progress)+1,

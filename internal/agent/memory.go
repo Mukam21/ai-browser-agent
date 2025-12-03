@@ -32,19 +32,16 @@ func NewMemory(maxSize int) *Memory {
 func (m *Memory) AddInteraction(interaction Interaction) {
 	m.interactions = append(m.interactions, interaction)
 
-	// Ограничиваем размер памяти
 	if len(m.interactions) > m.maxSize {
 		m.interactions = m.interactions[1:]
 	}
 
-	// Если взаимодействие важное, извлекаем insights
 	if interaction.Important {
 		m.extractInsights(interaction)
 	}
 }
 
 func (m *Memory) extractInsights(interaction Interaction) {
-	// Извлекаем insights из важных взаимодействий
 	key := interaction.Action
 
 	if strings.Contains(strings.ToLower(interaction.Result), "успех") ||
@@ -83,15 +80,14 @@ func (m *Memory) GetContext() string {
 	}
 
 	recent := m.GetRecentInteractions(5)
-	context := "📜 История последних действий:\n\n"
+	context := "История последних действий:\n\n"
 
 	for i, interaction := range recent {
 		context += fmt.Sprintf("%d. %s\n", i+1, formatInteraction(interaction))
 	}
 
-	// Добавляем insights если есть
 	if len(m.insights) > 0 {
-		context += "\n💡 Insights:\n"
+		context += "\n Insights:\n"
 		for key, insight := range m.insights {
 			context += fmt.Sprintf("- %s: %s\n", key, insight)
 		}

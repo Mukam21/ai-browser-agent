@@ -94,7 +94,6 @@ func (c *OpenAIClient) Chat(ctx context.Context, prompt string) (string, error) 
 }
 
 func (c *OpenAIClient) ChatStructured(ctx context.Context, prompt string, output interface{}) error {
-	// Добавляем инструкцию для JSON ответа
 	systemMsg := `Ты - автономный AI агент. ВСЕГДА отвечай ТОЛЬКО в формате JSON без дополнительного текста.
 Формат ответа должен быть валидным JSON.`
 
@@ -107,7 +106,6 @@ func (c *OpenAIClient) ChatStructured(ctx context.Context, prompt string, output
 		return err
 	}
 
-	// Очищаем ответ от возможного текста вокруг JSON
 	jsonStr := extractJSON(response)
 	if jsonStr == "" {
 		return fmt.Errorf("не удалось извлечь JSON из ответа: %s", response)
@@ -153,7 +151,6 @@ func (c *OpenAIClient) makeRequest(endpoint string, data interface{}) ([]byte, e
 }
 
 func extractJSON(text string) string {
-	// Ищем начало JSON
 	start := strings.Index(text, "{")
 	if start == -1 {
 		start = strings.Index(text, "[")
@@ -162,7 +159,6 @@ func extractJSON(text string) string {
 		}
 	}
 
-	// Ищем конец JSON
 	braceCount := 0
 	bracketCount := 0
 	inString := false
