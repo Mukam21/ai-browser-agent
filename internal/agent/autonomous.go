@@ -63,13 +63,11 @@ func (a *AutonomousAgent) Execute(ctx context.Context, task string) (string, err
 	a.isRunning = true
 	defer func() { a.isRunning = false }()
 
-	// Создаем контекст с таймаутом
 	timeoutCtx, cancel := context.WithTimeout(ctx, a.config.Timeout)
 	defer cancel()
 
-	log.Printf("🚀 Начинаю выполнение задачи: %s", task)
+	log.Printf(" Начинаю выполнение задачи: %s", task)
 
-	// Инициализируем контекст задачи
 	a.context = NewTaskContext(task)
 	a.planner = NewPlanner(a.llm, a.memory, a.context)
 
@@ -78,52 +76,45 @@ func (a *AutonomousAgent) Execute(ctx context.Context, task string) (string, err
 		case <-timeoutCtx.Done():
 			return "", fmt.Errorf("таймаут выполнения задачи")
 		default:
-			// Продолжаем выполнение
 		}
 
-		log.Printf("\n📝 Шаг %d/%d", stepNum, a.config.MaxSteps)
+		log.Printf("\n Шаг %d/%d", stepNum, a.config.MaxSteps)
 
-		// 1. Наблюдаем текущее состояние
 		observation, err := a.observe(timeoutCtx)
 		if err != nil {
-			log.Printf("⚠️ Ошибка наблюдения: %v", err)
+			log.Printf(" Ошибка наблюдения: %v", err)
 			observation = fmt.Sprintf("Ошибка получения состояния: %v", err)
 		}
 
-		// 2. Планируем следующее действие
 		plan, err := a.planner.PlanNextAction(timeoutCtx, observation)
 		if err != nil {
 			log.Printf("❌ Ошибка планирования: %v", err)
 			return "", fmt.Errorf("ошибка планирования: %w", err)
 		}
 
-		log.Printf("🤔 Мысль: %s", plan.Thought)
-		log.Printf("🔧 Действие: %s", plan.Action)
+		log.Printf(" Мысль: %s", plan.Thought)
+		log.Printf("Действие: %s", plan.Action)
 		if a.config.Debug {
-			log.Printf("📝 Reasoning: %s", plan.Reasoning)
-			log.Printf("🎯 Confidence: %.2f", plan.Confidence)
+			log.Printf("Reasoning: %s", plan.Reasoning)
+			log.Printf(" Confidence: %.2f", plan.Confidence)
 		}
 
-		// 3. Выполняем действие
 		result, err := a.act(timeoutCtx, plan)
 		if err != nil {
 			result = fmt.Sprintf("Ошибка: %v", err)
-			log.Printf("⚠️ Ошибка выполнения: %v", err)
+			log.Printf(" Ошибка выполнения: %v", err)
 		} else {
 			log.Printf("✅ Результат: %s", truncateText(result, 100))
 		}
 
-		// 4. Оцениваем результат
 		success := err == nil && !strings.Contains(strings.ToLower(result), "ошибка")
 		a.planner.EvaluateResult(plan, result, success)
 
-		// 5. Проверяем завершение задачи
 		if plan.Action == "finish" {
 			log.Println("🎉 Задача выполнена успешно!")
 			return a.generateFinalReport(plan, result), nil
 		}
 
-		// 6. Задержка между шагами
 		time.Sleep(a.config.StepDelay)
 	}
 
@@ -131,13 +122,11 @@ func (a *AutonomousAgent) Execute(ctx context.Context, task string) (string, err
 }
 
 func (a *AutonomousAgent) observe(ctx context.Context) (string, error) {
-	// Получаем состояние страницы
 	state, err := a.browser.GetPageState()
 	if err != nil {
 		return "", err
 	}
 
-	// Получаем DOM для более детального анализа
 	dom, domErr := a.browser.GetDOM()
 
 	observation := fmt.Sprintf(`Текущее состояние страницы:
@@ -151,12 +140,10 @@ func (a *AutonomousAgent) observe(ctx context.Context) (string, error) {
 		len(a.context.Progress)+1, a.config.MaxSteps)
 
 	if domErr == nil {
-		// Добавляем часть DOM для анализа
 		domPreview := truncateText(dom, 2000)
 		observation += fmt.Sprintf("\n\nHTML (первые 2000 символов):\n%s", domPreview)
 	}
 
-	// Обновляем историю страниц
 	a.context.AddPageState("current", "Текущая страница", truncateText(state, 100))
 
 	return observation, nil
@@ -173,7 +160,6 @@ func (a *AutonomousAgent) act(ctx context.Context, plan *Plan) (string, error) {
 
 	case "find_element":
 		description, _ := plan.ActionInput["description"].(string)
-		// В безопасном режиме симулируем поиск
 		return fmt.Sprintf("Найден элемент по описанию: '%s'", description), nil
 
 	case "click":
@@ -199,7 +185,6 @@ func (a *AutonomousAgent) act(ctx context.Context, plan *Plan) (string, error) {
 		return fmt.Sprintf("Прочитано состояние страницы: %s", truncateText(state, 150)), nil
 
 	case "scroll":
-		// В безопасном режиме симулируем скролл
 		return "Страница прокручена", nil
 
 	case "wait":
@@ -228,19 +213,19 @@ func (a *AutonomousAgent) act(ctx context.Context, plan *Plan) (string, error) {
 func (a *AutonomousAgent) generateFinalReport(plan *Plan, result string) string {
 	finalResult, _ := plan.ActionInput["result"].(string)
 
-	report := fmt.Sprintf(`🎉 ЗАДАЧА ВЫПОЛНЕНА УСПЕШНО!
+	report := fmt.Sprintf(` ЗАДАЧА ВЫПОЛНЕНА УСПЕШНО!
 
-📋 Исходная задача: %s
+ Исходная задача: %s
 
-📊 Статистика выполнения:
+ Статистика выполнения:
 • Всего шагов: %d
 • Успешных шагов: %d
 • Время выполнения: %v
 • Использованная модель: %s
 
-🎯 Результат: %s
+ Результат: %s
 
-📜 История действий:`,
+ История действий:`,
 		a.context.OriginalTask,
 		len(a.context.Progress),
 		a.countSuccessfulSteps(),
@@ -257,7 +242,7 @@ func (a *AutonomousAgent) generateFinalReport(plan *Plan, result string) string 
 			status, step.StepNumber, step.Goal, truncateText(step.Result, 80))
 	}
 
-	report += "\n\n💡 Insights из памяти агента:"
+	report += "\n\n Insights из памяти агента:"
 	insights := a.memory.GetInsights()
 	if len(insights) == 0 {
 		report += "\nНет значимых insights"
@@ -271,26 +256,25 @@ func (a *AutonomousAgent) generateFinalReport(plan *Plan, result string) string 
 }
 
 func (a *AutonomousAgent) generateTimeoutReport() string {
-	report := fmt.Sprintf(`⏰ ДОСТИГНУТ ЛИМИТ ШАГОВ
+	report := fmt.Sprintf(` ДОСТИГНУТ ЛИМИТ ШАГОВ
 
-📋 Исходная задача: %s
+ Исходная задача: %s
 
-📊 Статистика выполнения:
+ Статистика выполнения:
 • Выполнено шагов: %d
 • Успешных шагов: %d
 • Максимальный лимит: %d шагов
 • Время выполнения: %v
 
-⚠️ Причина остановки: достигнут максимальный лимит шагов
+ Причина остановки: достигнут максимальный лимит шагов
 
-📜 История последних действий:`,
+ История последних действий:`,
 		a.context.OriginalTask,
 		len(a.context.Progress),
 		a.countSuccessfulSteps(),
 		a.config.MaxSteps,
 		time.Since(a.context.StartTime).Round(time.Second))
 
-	// Добавляем последние 5 шагов
 	start := len(a.context.Progress) - 5
 	if start < 0 {
 		start = 0
@@ -306,7 +290,7 @@ func (a *AutonomousAgent) generateTimeoutReport() string {
 			status, step.StepNumber, step.Goal, truncateText(step.Result, 80))
 	}
 
-	report += "\n\n💡 Рекомендации:"
+	report += "\n\n Рекомендации:"
 	report += "\n• Упростите задачу или разбейте на подзадачи"
 	report += "\n• Увеличьте MAX_STEPS в конфигурации"
 	report += "\n• Проверьте доступность целевых сайтов"

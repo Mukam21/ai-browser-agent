@@ -41,7 +41,7 @@ func (sc *SafeController) Navigate(url string) error {
 	}
 
 	sc.currentURL = url
-	time.Sleep(3 * time.Second) // Даем время браузеру открыться
+	time.Sleep(3 * time.Second)
 
 	log.Printf("✅ URL открыт в системном браузере: %s", url)
 	return nil
@@ -148,64 +148,84 @@ func (sc *SafeController) GetDOM() (string, error) {
 func (sc *SafeController) Click(selector string) error {
 	log.Printf(" Симуляция клика: %s", selector)
 	log.Printf(" В реальном режиме был бы клик по элементу с селектором: %s", selector)
-
-	// Симулируем задержку клика
-	time.Sleep(500 * time.Millisecond)
 	return nil
 }
+
+// func (sc *SafeController) Click(selector string) error {
+// 	log.Printf(" Симуляция клика: %s", selector)
+// 	log.Printf(" В реальном режиме был бы клик по элементу с селектором: %s", selector)
+
+// 	// Симулируем задержку клика
+// 	time.Sleep(500 * time.Millisecond)
+// 	return nil
+// }
 
 func (sc *SafeController) Fill(selector, value string) error {
-	log.Printf(" Симуляция ввода: %s = %s", selector, value)
-	log.Printf(" В реальном режиме в поле %s был бы введен текст: %s", selector, value)
-
-	// Симулируем задержку ввода
-	time.Sleep(300 * time.Millisecond)
+	log.Printf(" Симуляция ввода текста '%s' в элемент: %s", value, selector)
 	return nil
 }
+
+// func (sc *SafeController) Fill(selector, value string) error {
+// 	log.Printf(" Симуляция ввода: %s = %s", selector, value)
+// 	log.Printf(" В реальном режиме в поле %s был бы введен текст: %s", selector, value)
+
+// 	// Симулируем задержку ввода
+// 	time.Sleep(300 * time.Millisecond)
+// 	return nil
+// }
 
 func (sc *SafeController) Screenshot(path string) error {
-	if path == "" {
-		path = fmt.Sprintf("screenshot_%d.txt", time.Now().Unix())
-	}
-
 	log.Printf(" Симуляция скриншота: %s", path)
-
-	content := fmt.Sprintf(`AI Browser Agent - Скриншот (симуляция)
-
-Дата: %s
-Время: %s
-Режим: Безопасный (без автоматизации браузера)
-Текущий URL: %s
-
- Информация о выполнении:
-• AI агент работает в безопасном режиме
-• Все команды анализируются и планируются
-• URL открываются в системном браузере
-• Взаимодействия симулируются
-
- Для получения реальных скриншотов:
-1. Отключите антивирус для Rod/Playwright
-2. Или используйте Selenium WebDriver
-3. Или запустите на Linux/Mac
-
- Следующие шаги развития:
-• Интеграция с реальным браузерным движком
-• Компьютерное зение для анализа страниц
-• Векторная память для контекста
-• Поддержка сложных многошаговых задач`,
-		time.Now().Format("2006-01-02"),
-		time.Now().Format("15:04:05"),
-		sc.currentURL)
-
-	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
-		return fmt.Errorf("не удалось сохранить скриншот: %w", err)
+	file, err := os.Create(path)
+	if err != nil {
+		return err
 	}
-
-	log.Printf("✅ Текстовый скриншот сохранен: %s", path)
+	file.Close()
 	return nil
 }
 
+// func (sc *SafeController) Screenshot(path string) error {
+// 	if path == "" {
+// 		path = fmt.Sprintf("screenshot_%d.txt", time.Now().Unix())
+// 	}
+
+// 	log.Printf(" Симуляция скриншота: %s", path)
+
+// 	content := fmt.Sprintf(`AI Browser Agent - Скриншот (симуляция)
+
+// Дата: %s
+// Время: %s
+// Режим: Безопасный (без автоматизации браузера)
+// Текущий URL: %s
+
+//  Информация о выполнении:
+// • AI агент работает в безопасном режиме
+// • Все команды анализируются и планируются
+// • URL открываются в системном браузере
+// • Взаимодействия симулируются
+
+//  Для получения реальных скриншотов:
+// 1. Отключите антивирус для Rod/Playwright
+// 2. Или используйте Selenium WebDriver
+// 3. Или запустите на Linux/Mac
+
+//  Следующие шаги развития:
+// • Интеграция с реальным браузерным движком
+// • Компьютерное зение для анализа страниц
+// • Векторная память для контекста
+// • Поддержка сложных многошаговых задач`,
+// 		time.Now().Format("2006-01-02"),
+// 		time.Now().Format("15:04:05"),
+// 		sc.currentURL)
+
+// 	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+// 		return fmt.Errorf("не удалось сохранить скриншот: %w", err)
+// 	}
+
+// 	log.Printf("✅ Текстовый скриншот сохранен: %s", path)
+// 	return nil
+// }
+
 func (sc *SafeController) Close() {
-	log.Println("✅ Безопасный контроллер завершил работу")
-	sc.currentURL = ""
+	log.Println(" Закрываю контроллер браузера (safe mode)")
 }

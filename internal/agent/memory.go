@@ -103,9 +103,12 @@ func formatInteraction(interaction Interaction) string {
 		truncateText(interaction.Result, 100))
 }
 
-func truncateText(text string, maxLen int) string {
-	if len(text) <= maxLen {
+func truncateText(text string, max int) string {
+	if len(text) <= max {
 		return text
 	}
-	return text[:maxLen] + "..."
+	if max <= 3 {
+		return text[:max]
+	}
+	return text[:max-3] + "..."
 }
